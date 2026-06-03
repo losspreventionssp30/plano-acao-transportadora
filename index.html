@@ -221,18 +221,17 @@
 
     /* ── Image upload area ── */
     .upload-area {
-      border: 2px dashed var(--ml-border);
+      border: none;
       border-radius: 8px;
       padding: 20px 16px;
       text-align: center;
       cursor: pointer;
-      transition: border 0.15s, background 0.15s;
-      background: #fafafa;
+      transition: background 0.15s;
+      background: #efefef;
     }
 
     .upload-area:hover {
-      border-color: var(--ml-blue);
-      background: #f0f6ff;
+      background: #e4e4e4;
     }
 
     .upload-area input[type="file"] {
@@ -266,8 +265,8 @@
 
     .preview-item {
       position: relative;
-      width: 90px;
-      height: 90px;
+      width: 180px;
+      height: 180px;
     }
 
     .preview-item img {
