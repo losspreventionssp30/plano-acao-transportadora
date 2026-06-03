@@ -628,7 +628,32 @@
     return { pdf, base64: pdf.output("datauristring") };
   }
 
+  function validateForm() {
+    const campos = [
+      { id: "f_transportadora", label: "Nome da Transportadora" },
+      { id: "f_responsavel",    label: "Responsável pelo Preenchimento" },
+      { id: "f_email",          label: "E-mail para Confirmação" },
+      { id: "p1_resp",          label: "Resposta — Treinamento e Manuseio" },
+      { id: "p2_resp",          label: "Resposta — Protocolo de Dispatcher" },
+      { id: "p3_resp",          label: "Resposta — Redução de LOR e Fraude" },
+      { id: "f_assinatura",     label: "Confirmação do Nome do Responsável" },
+      { id: "f_data_envio",     label: "Data de Envio" },
+    ];
+    for (const c of campos) {
+      const el = document.getElementById(c.id);
+      if (!el || !el.value.trim()) {
+        showToast(`⚠️ Preencha o campo: ${c.label}`, true, 5000);
+        el && el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el && el.focus();
+        return false;
+      }
+    }
+    return true;
+  }
+
   async function downloadPDF() {
+    if (!validateForm()) return;
+
     const btn = document.getElementById("btn-pdf");
     const content = document.getElementById("btn-pdf-content");
     btn.disabled = true;
