@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plano de Ação — Transportadora | Mercado Livre</title>
+
+  <!-- jsPDF + html2canvas para geração do PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- EmailJS para envio por e-mail -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <style>
+    :root {
+      --ml-yellow:  #F5C518;
+      --ml-yellow2: #f0c040;
+      --ml-blue:    #1a2444;
+      --ml-dark:    #1a2444;
+      --ml-gray:    #1a2444;
+      --ml-border:  #d8dce8;
+      --ml-text:    #1a2444;
+      --ml-label:   #555555;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Proxima Nova', 'Segoe UI', Arial, sans-serif;
+      background: var(--ml-gray);
+      color: var(--ml-text);
+      padding: 28px 16px 48px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--ml-yellow);
+      padding: 28px 40px 22px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .ml-logo {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--ml-dark);
+      letter-spacing: -0.5px;
+    }
+
+    .ml-logo span { color: var(--ml-blue); }
+
+    .lp-badge {
+      background: var(--ml-dark);
+      color: var(--ml-yellow);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .header h1 {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--ml-dark);
+      line-height: 1.2;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #444;
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    /* ── Alert ── */
+    .alert-banner {
+      background: var(--ml-dark);
+      color: var(--ml-yellow);
+      padding: 13px 40px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+    }
+
+    /* ── Body ── */
+    .form-body {
+      padding: 36px 40px;
+    }
+
+    /* ── Info grid ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ml-label);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="email"],
+    textarea,
+    select {
+      border: 1.5px solid var(--ml-border);
+      border-radius: 6px;
+      padding: 10px 13px;
+      font-size: 14px;
+      color: var(--ml-text);
+      outline: none;
+      transition: border 0.15s;
+      width: 100%;
+      font-family: inherit;
+      background: #fff;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--ml-blue);
+      box-shadow: 0 0 0 3px rgba(52,131,250,0.12);
+    }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    /* ── Pillars ── */
+    .pillar {
+      border: 1.5px solid var(--ml-border);
+      border-radius: 10px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+
+    .pillar-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 22px;
+      border-bottom: 1.5px solid var(--ml-border);
+    }
+
+    .p1 .pillar-header { background: #fffde7; }
+    .p2 .pillar-header { background: #e8f4fd; }
+    .p3 .pillar-header { background: #fce8e8; }
+
+    .pillar-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+
+    .pillar-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ml-dark);
+    }
+
+    .pillar-subtitle {
+      font-size: 12px;
+      color: #666;
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+
+    .pillar-body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── Question blocks ── */
+    .question-block { display: flex; flex-direction: column; gap: 7px; }
+
+    .question-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ml-text);
+      line-height: 1.45;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .q-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ml-yellow);
+      color: var(--ml-dark);
+      font-size: 11px;
+      font-weight: 900;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    /* ── Image upload area ── */
+    .upload-area {
+      border: 2px dashed var(--ml-border);
+      border-radius: 8px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border 0.15s, background 0.15s;
+      background: #fafafa;
+    }
+
+    .upload-area:hover {
+      border-color: var(--ml-blue);
+      background: #f0f6ff;
+    }
+
+    .upload-area input[type="file"] {
+      display: none;
+    }
+
+    .upload-area .upload-icon { font-size: 32px; }
+
+    .upload-area p {
+      font-size: 13px;
+      color: #666;
+      margin-top: 6px;
+    }
+
+    .upload-area p strong {
+      color: var(--ml-blue);
+    }
+
+    .upload-area .hint {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .preview-item {
+      position: relative;
+      width: 90px;
+      height: 90px;
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1.5px solid var(--ml-border);
+    }
+
+    .preview-item .remove-img {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    /* ── Footer ── */
+    .form-footer {
+      background: #fafafa;
+      border-top: 1.5px solid var(--ml-border);
+      padding: 28px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .commitment-box {
+      background: #fffde7;
+      border: 1.5px solid var(--ml-yellow);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: #5c4a00;
+      line-height: 1.6;
+    }
+
+    .commitment-box strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    /* ── Buttons ── */
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 7px;
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+    }
+
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-send {
+      background: var(--ml-blue);
+      color: #fff;
+    }
+
+    .btn-send:hover:not(:disabled) { background: #2368d4; }
+
+    .btn-pdf {
+      background: var(--ml-yellow);
+      color: var(--ml-dark);
+    }
+
+    .btn-pdf:hover { background: #f0d800; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1b5e20;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      transition: transform 0.35s cubic-bezier(.175,.885,.32,1.275);
+      z-index: 9999;
+    }
+
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.error { background: #b71c1c; }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 3px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Print ── */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .container { box-shadow: none; border-radius: 0; }
+      .btn-row, #toast { display: none; }
+    }
+
+    @media (max-width: 620px) {
+      .info-grid, .two-col, .three-col, .btn-row { grid-template-columns: 1fr; }
+      .form-body, .form-footer, .header { padding: 20px; }
+      .alert-banner { padding: 12px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="form-container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div class="ml-logo">Mercado <span>Livre</span></div>
+      <span class="lp-badge">Loss Prevention</span>
+    </div>
+    <h1>Plano de Ação — Transportadora</h1>
+    <p>Preencha todos os campos com as ações previstas para cada pilar. Este documento será utilizado como compromisso formal de melhoria operacional.</p>
+  </div>
+
+  <div class="alert-banner">
+    ⚠️ A continuidade da parceria exige a proteção inegociável da nossa rede. Envio formal obrigatório.
+  </div>
+
+  <div class="form-body">
+
+    <!-- Identificação -->
+    <div class="info-grid">
+      <div class="field-group full">
+        <label>Nome da Transportadora *</label>
+        <input id="f_transportadora" type="text" placeholder="Razão social" required />
+      </div>
+      <div class="field-group">
+        <label>Responsável pelo Preenchimento *</label>
+        <input id="f_responsavel" type="text" placeholder="Nome completo" required />
+      </div>
+      <div class="field-group">
+        <label>E-mail para Confirmação *</label>
+        <input id="f_email" type="email" placeholder="email@transportadora.com.br" required />
+      </div>
+    </div>
+
+    <!-- ═══ PILAR 1 ═══ -->
+    <div class="pillar p1">
+      <div class="pillar-header">
+        <span class="pillar-icon">📋</span>
+        <div>
+          <div class="pillar-title">Pilar 1 — Treinamento e Manuseio</div>
+        </div>
+      </div>
+      <div class="pillar-body">
+
+        <div class="question-block">
+          <div class="question-label">Como vocês vão re-treinar 100% dos motoristas sobre a atenção a pacotes violados, fitas rasgadas e Empty Boxes nas próximas 48 horas?</div>
+          <textarea id="p1_resp" placeholder="Descreva a solução..." style="min-height:130px;"></textarea>
+        </div>
+
+        <div class="question-block">
+          <div class="question-label">Evidências fotográficas do treinamento (fotos da reunião, lista de presença, material utilizado):</div>
+          <div class="upload-area" onclick="document.getElementById('upload_p1').click()">
+            <input type="file" id="upload_p1" accept="image/*" multiple onchange="handleUpload(this, 'preview_p1')" />
+            <div class="upload-icon">🖼️</div>
+            <p><strong>Clique para adicionar imagens</strong> ou arraste aqui</p>
+            <div class="hint">JPG, PNG ou WEBP · Máx. 5 imagens</div>
+          </div>
+          <div class="preview-grid" id="preview_p1"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ PILAR 2 ═══ -->
+    <div class="pillar p2">
+      <div class="pillar-header">
+        <span class="pillar-icon">🎧</span>
+        <div>
+          <div class="pillar-title">Pilar 2 — Protocolo de Dispatcher</div>
+        </div>
+      </div>
+      <div class="pillar-body">
+
+        <div class="question-block">
+          <div class="question-label">Qual será o processo interno para garantir que os motoristas acionem o dispatcher imediatamente na rota, antes de efetuar uma entrega suspeita?</div>
+          <textarea id="p2_resp" placeholder="Descreva a solução..." style="min-height:130px;"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ PILAR 3 ═══ -->
+    <div class="pillar p3">
+      <div class="pillar-header">
+        <span class="pillar-icon">🔒</span>
+        <div>
+          <div class="pillar-title">Pilar 3 — Redução de LOR e Fraude</div>
+        </div>
+      </div>
+      <div class="pillar-body">
+
+        <div class="question-block">
+          <div class="question-label">Quais controles operacionais vocês irão implementar na base para impedir que pacotes comprometidos sequer cheguem à milha final?</div>
+          <textarea id="p3_resp" placeholder="Descreva a solução..." style="min-height:130px;"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /form-body -->
+
+  <!-- Footer -->
+  <div class="form-footer">
+
+    <div class="commitment-box">
+      <strong>⚠️ Declaração de Compromisso</strong>
+      Ao submeter este formulário, a transportadora declara que as ações informadas são reais, exequíveis e serão implementadas dentro dos prazos indicados. O não cumprimento poderá resultar em revisão da parceria operacional com o Mercado Livre.
+    </div>
+
+    <div class="two-col">
+      <div class="field-group">
+        <label>Confirmação do Nome do Responsável *</label>
+        <input id="f_assinatura" type="text" placeholder="Nome completo" required />
+      </div>
+      <div class="field-group">
+        <label>Data de Envio *</label>
+        <input id="f_data_envio" type="date" required />
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Observações Adicionais</label>
+      <textarea id="f_obs" placeholder="Dificuldades previstas, solicitações de apoio do Mercado Livre, etc." style="min-height:70px;"></textarea>
+    </div>
+
+    <button class="btn btn-pdf" id="btn-pdf" onclick="downloadPDF()">
+      <span id="btn-pdf-content">🖨️ Baixar PDF</span>
+    </button>
+
+    <p style="font-size:11px; color:#999; text-align:center;">
+      Ao baixar o PDF, uma notificação de conclusão será enviada automaticamente ao e-mail de Loss Prevention.
+    </p>
+
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ─── Configure seu e-mail aqui ────────────────────────────────────
+  const EMAILJS_SERVICE_ID  = "SEU_SERVICE_ID";   // EmailJS service ID
+  const EMAILJS_TEMPLATE_ID = "SEU_TEMPLATE_ID";  // EmailJS template ID
+  const EMAILJS_PUBLIC_KEY  = "SUA_PUBLIC_KEY";   // EmailJS public key
+  const MEU_EMAIL           = "SEuemail@meli.com"; // Seu e-mail (LP)
+  // ──────────────────────────────────────────────────────────────────
+
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+
+  // Preview de imagens
+  const imageFiles = {};
+
+  function handleUpload(input, previewId) {
+    const preview = document.getElementById(previewId);
+    if (!imageFiles[previewId]) imageFiles[previewId] = [];
+    Array.from(input.files).forEach(file => {
+      if (imageFiles[previewId].length >= 5) { showToast("Máximo de 5 imagens.", true); return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        const idx = imageFiles[previewId].length;
+        imageFiles[previewId].push({ name: file.name, data: e.target.result });
+        const item = document.createElement("div");
+        item.className = "preview-item";
+        item.id = `img_${previewId}_${idx}`;
+        item.innerHTML = `<img src="${e.target.result}" alt="${file.name}" /><button class="remove-img" onclick="removeImg('${previewId}',${idx})">×</button>`;
+        preview.appendChild(item);
+      };
+      reader.readAsDataURL(file);
+    });
+    input.value = "";
+  }
+
+  function removeImg(previewId, idx) {
+    imageFiles[previewId][idx] = null;
+    const el = document.getElementById(`img_${previewId}_${idx}`);
+    if (el) el.remove();
+  }
+
+  function v(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : "";
+  }
+
+  function collectFormData() {
+    return {
+      transportadora: v("f_transportadora"),
+      responsavel:    v("f_responsavel"),
+      email:          v("f_email"),
+      p1_resp:        v("p1_resp"),
+      p2_resp:        v("p2_resp"),
+      p3_resp:        v("p3_resp"),
+      assinatura:     v("f_assinatura"),
+      data_envio:     v("f_data_envio"),
+      obs:            v("f_obs"),
+    };
+  }
+
+  async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const canvas = await html2canvas(document.getElementById("form-container"), {
+      scale: 1.5, useCORS: true, logging: false,
+    });
+    const imgData = canvas.toDataURL("image/jpeg", 0.85);
+    const pdf = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const imgH  = pageW * (canvas.height / canvas.width);
+    let pos = 0;
+    pdf.addImage(imgData, "JPEG", 0, pos, pageW, imgH);
+    let remaining = imgH - pageH;
+    while (remaining > 0) {
+      pos -= pageH;
+      pdf.addPage();
+      pdf.addImage(imgData, "JPEG", 0, pos, pageW, imgH);
+      remaining -= pageH;
+    }
+    return { pdf, base64: pdf.output("datauristring") };
+  }
+
+  async function downloadPDF() {
+    const btn = document.getElementById("btn-pdf");
+    const content = document.getElementById("btn-pdf-content");
+    btn.disabled = true;
+    content.innerHTML = `<span class="spinner"></span> Gerando PDF...`;
+    showToast("⏳ Gerando PDF...", false, 15000);
+
+    try {
+      const d = collectFormData();
+      const { pdf, base64 } = await generatePDF();
+
+      // 1. Baixa o PDF
+      pdf.save(`PlanoAcao_${d.transportadora || "Transportadora"}_${new Date().toLocaleDateString("pt-BR").replace(/\//g,"-")}.pdf`);
+
+      // 2. Envia e-mail de notificação automaticamente
+      const preview = `
+<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
+  <div style="background:#1a2444;padding:20px 28px;">
+    <h2 style="color:#F5C518;margin:0;font-size:18px;">✅ Plano de Ação Concluído</h2>
+    <p style="color:#ccc;margin:6px 0 0;font-size:13px;">Loss Prevention — Mercado Livre</p>
+  </div>
+  <div style="padding:24px 28px;background:#fff;">
+    <p style="font-size:15px;color:#333;margin:0 0 18px;"><strong>A transportadora preencheu e baixou o Plano de Ação.</strong></p>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <tr><td style="padding:8px;background:#f5f5f5;font-weight:700;width:35%">Transportadora</td><td style="padding:8px;border-bottom:1px solid #eee">${d.transportadora}</td></tr>
+      <tr><td style="padding:8px;background:#f5f5f5;font-weight:700">Responsável</td><td style="padding:8px;border-bottom:1px solid #eee">${d.responsavel}</td></tr>
+      <tr><td style="padding:8px;background:#f5f5f5;font-weight:700">Data</td><td style="padding:8px;border-bottom:1px solid #eee">${d.data_envio}</td></tr>
+    </table>
+    <hr style="margin:20px 0;border:none;border-top:1px solid #eee;">
+    <p style="font-size:13px;font-weight:700;color:#1a2444;margin:0 0 6px">📋 Pilar 1 — Treinamento e Manuseio</p>
+    <p style="font-size:13px;color:#555;margin:0 0 16px;white-space:pre-wrap">${d.p1_resp || "—"}</p>
+    <p style="font-size:13px;font-weight:700;color:#1a2444;margin:0 0 6px">🎧 Pilar 2 — Protocolo de Dispatcher</p>
+    <p style="font-size:13px;color:#555;margin:0 0 16px;white-space:pre-wrap">${d.p2_resp || "—"}</p>
+    <p style="font-size:13px;font-weight:700;color:#1a2444;margin:0 0 6px">🔒 Pilar 3 — Redução de LOR e Fraude</p>
+    <p style="font-size:13px;color:#555;margin:0 0 16px;white-space:pre-wrap">${d.p3_resp || "—"}</p>
+    ${d.obs ? `<p style="font-size:13px;font-weight:700;color:#1a2444;margin:0 0 6px">Observações</p><p style="font-size:13px;color:#555;margin:0">${d.obs}</p>` : ""}
+  </div>
+  <div style="background:#f9f9f9;padding:14px 28px;font-size:11px;color:#999;text-align:center;">
+    O PDF completo foi baixado pela transportadora. Este e-mail é uma notificação automática.
+  </div>
+</div>`.trim();
+
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email:       MEU_EMAIL,
+        subject:        `✅ Plano de Ação Concluído — ${d.transportadora}`,
+        message_html:   preview,
+        transportadora: d.transportadora,
+        responsavel:    d.responsavel,
+      });
+
+      showToast("✅ PDF baixado e notificação enviada por e-mail!");
+      btn.style.background = "#2e7d32";
+      content.innerHTML = "✅ PDF Baixado";
+    } catch(err) {
+      console.error(err);
+      showToast("PDF baixado, mas falha ao enviar e-mail. Verifique as configs.", true);
+      btn.disabled = false;
+      content.innerHTML = "🖨️ Baixar PDF";
+    }
+  }
+
+  // Toast
+  let toastTimer;
+  function showToast(msg, isError = false, duration = 4500) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = isError ? "error" : "";
+    requestAnimationFrame(() => t.classList.add("show"));
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), duration);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const today = new Date().toISOString().split("T")[0];
+    const d = document.getElementById("f_data_envio");
+    if (d) d.value = today;
+  });
+</script>
+</body>
+</html>
